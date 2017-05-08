@@ -19,9 +19,7 @@ class m170507_114156_create_books_table extends Migration
         $this->createTable('books', [
             'id' => $this->primaryKey(),
             'id_user' => $this->integer()->notNull(),
-            'id_hist' => $this->integer()->notNull(),
-            'access' => $this->integer()->defaultValue(0),
-            'created' => $this->date(),
+            'access' => $this->integer()->defaultValue(0)
         ]);
 
      
