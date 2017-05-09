@@ -34,10 +34,10 @@ class LibsController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout','create','update'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout','create','update'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -69,6 +69,7 @@ class LibsController extends Controller
     }
 
 
+
     /**
      * Lists all History models.
      * @return mixed
@@ -94,9 +95,9 @@ class LibsController extends Controller
     public function actionView($id = 0)
     {
 		
-		if(Yii::$app->request->post())
+		if(Yii::$app->request->post() 
+			    and !Yii::$app->user->isGuest)
 		{
-			//проверка валидации!!!!!!!!!!!!!
 			
 			//переход по истории
 			$id_hist = Yii::$app->request->post('id_hist');
@@ -122,6 +123,7 @@ class LibsController extends Controller
 		
 		}	
 		
+		///проверка на наличие книги
 		$is_exist = History::findOne([
 					'id_book' => $id,
 					'active_ver' => 1
@@ -130,10 +132,12 @@ class LibsController extends Controller
 		if(!$is_exist)
 		        throw new NotFoundHttpException('The requested page does not exist.');
 			
+		
 		$model = History::find()
 					->where(['=', 'books.id',$id])
 					->joinWith('books' ,'books.id_owner = users.id')
 					->joinWith('users')
+					->orderBy('date DESC')
 					->all();
 		
 		
@@ -294,9 +298,8 @@ class LibsController extends Controller
         $model = new Users();
 		$model->scenario = Users::SCENARIO_LOGIN;
 		
-        if ($model->load(Yii::$app->request->post()) and $model->validate()) {
+        if ($model->load(Yii::$app->request->post()) and $model->login()) {
 			
-		    Yii::$app->user->login($model, 3600*24);
             return $this->goBack();
         }
         return $this->render('login', [
@@ -304,6 +307,7 @@ class LibsController extends Controller
         ]);
     }
 	
+
     public function actionRegist()
     {
         if (!Yii::$app->user->isGuest) {
@@ -314,10 +318,6 @@ class LibsController extends Controller
 		$model->scenario = Users::SCENARIO_REGIST;
 		
         if ($model->load(Yii::$app->request->post()) and $model->saveUser()) {
-			
-			
-		    Yii::$app->user->login($model, 3600*24);
-			// print_r(Yii::$app->user->identity->username);exit;
 			
             return $this->goBack();
         }

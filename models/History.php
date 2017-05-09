@@ -71,7 +71,7 @@ class History extends \yii\db\ActiveRecord
     public function saveBook()
     {
        
-			$user_id = 1;///////id авториз польз
+			$user_id = Yii::$app->user->identity->id;
 			
 			$book_model = new Books();
 			$book_model->id_user = $user_id;
@@ -92,7 +92,7 @@ class History extends \yii\db\ActiveRecord
     public function insertBook($old_rec)
     {
        
-			$user_id = 1;///////id авториз польз
+			$user_id = Yii::$app->user->identity->id;
 				
 			$this->id_book = $old_rec->id_book;
 			$this->id_owner = $user_id;

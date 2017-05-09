@@ -34,23 +34,25 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+	
+	$isGuest =  Yii::$app->user->isGuest;
+	
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [   
-		    ['label' => 'Регистрация', 'url' => ['/libs/regist']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Вход', 'url' => ['/libs/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/libs/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' =>  $isGuest ? [   	
+							 ['label' => 'Регистрация', 'url' => ['/libs/regist']],
+							 ['label' => 'Вход', 'url' => ['/libs/login']],
+						]:[
+							'<li>'
+							. Html::beginForm(['/libs/logout'], 'post')
+							. Html::submitButton(
+								'Выход (' . Yii::$app->user->identity->username . ')',
+								['class' => 'btn btn-link logout']
+							)
+							. Html::endForm()
+							. '</li>'
+					   ]
+       
     ]);
     NavBar::end();
 

@@ -40,7 +40,7 @@ class HistorySearch extends History
      */
     public function search($params)
     {
-        $query = History::find();
+        $query = History::find()->where(['active_ver' => 1])->orderBy('date DESC');
 
         // add conditions that should always apply here
 

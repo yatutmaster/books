@@ -7,6 +7,7 @@ use yii\widgets\ListView;
 /* @var $this yii\web\View */
 /* @var $model app\models\History */
 
+$user = Yii::$app->user;
 
 $this->params['breadcrumbs'][] = ['label' => 'Список книг', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $book->book_name;
@@ -15,13 +16,17 @@ $this->params['breadcrumbs'][] = $book->book_name;
 
     <h1><?= Html::encode($book->book_name) ?></h1>
     
-	
+<?php if(!$user->isGuest) { ?>	
     <div class="row">
 	
+     <?php if($book->books[0]['access'] or $user->identity->id == $book->books[0]['id_user']) { ?>
 		<div class="col-md-2  col-xs-6 " >
 			<?= Html::a('Изменить запись', ['update', 'id' =>$book->id], ['id' => 'update_link','class' => 'btn btn-primary']) ?>
 		</div>
-		
+	 <?php } ?>
+	
+	
+	 <?php if($user->identity->id == $book->books[0]['id_user']) { ?>
 		<div class=" col-md-2  col-xs-6 " >
 		<?php if(!!$book->books[0]['access']) { ?>
 			<?= Html::a('Изменение разрешено', ['#'], ['data-id_book' => $book->id_book,'class' => 'btn-access btn btn-danger ','title' => 'Доступ другим пользователям изменять данные']) ?>
@@ -29,12 +34,16 @@ $this->params['breadcrumbs'][] = $book->book_name;
 			<?= Html::a('Изменение запрещено', ['#'], ['data-id_book' => $book->id_book,'class' => 'btn-access btn btn-success ','title' => 'Доступ другим пользователям изменять данные']) ?>
 		<?php } ?>
 		</div>
+	 <?php } ?>	
+		
 		
    </div>
-    
+	   
 	<br>
+ <?php } ?>
 
-
+ 
+ 
     <?= DetailView::widget([
         'model' => $book,
         'attributes' => [
@@ -69,7 +78,7 @@ $this->params['breadcrumbs'][] = $book->book_name;
 </div>
 
 
-
+ <?php if($user->identity->id == $book->books[0]['id_user']) { ?>
 <div class="container-fluid">	
 	<h3>История изенений</h3>
 	
@@ -123,4 +132,4 @@ $this->params['breadcrumbs'][] = $book->book_name;
  </table>
  
 </div>
-
+<?php } ?>

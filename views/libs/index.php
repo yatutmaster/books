@@ -7,7 +7,9 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\HistorySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-// print_r(\Yii::$app->user->id);exit;
+
+
+
 $this->title = 'Список книг';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -16,11 +18,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
   
     
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('Добавить книгу', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <?php if(!Yii::$app->user->isGuest) { ?>
+			<p>
+				<?= Html::a('Добавить книгу', ['create'], ['class' => 'btn btn-success']) ?>
+			</p>
+	<?php } ?>
+	
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

@@ -16,11 +16,12 @@ use Yii;
  * @property History[] $histories
  * @property History[] $histories0
  */
-class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
+class Users extends \yii\db\ActiveRecord 
 {
 	
 
 	private $_salt = 'kuku';
+	private $_user = false;
 	
 	const SCENARIO_LOGIN = 'login';
 	const SCENARIO_REGIST = 'regist';
@@ -52,7 +53,7 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             [['username','password','fio'], 'required','message' => 'Пожалуйста заполните поле'],
             [['username'], 'string', 'max' => 20,'message' => 'Логин не должен превышать 20 символов'],
             [['fio'], 'string', 'max' => 255],
-            [['username'], 'unique','message' => 'Логин уже используется'],
+            [['username'], 'unique','on' => self::SCENARIO_REGIST, 'message' => 'Логин уже используется'],
             ['password', 'validatePassword','on' => self::SCENARIO_LOGIN ],
         ];
     }
@@ -84,6 +85,19 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
         }
     }
 	
+	
+	public function login()
+    {
+        if($this->validate()) 
+		{
+			  return Yii::$app->user->login($this->getUser(),3600*24);
+        }
+		
+		return false;
+    }
+	
+	
+	
     public function saveUser()
     {
         
@@ -91,67 +105,32 @@ class Users extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 			 $this->password = md5($this->_salt.$this->username.$this->password);
 			
 			 $this->authKey = Yii::$app->security->generateRandomString();
+			 
+			 if($this->save())
+			 {
+				  return Yii::$app->user->login($this->getUser(),3600*24);
+			 }
 		
-			
-			 return $this->save();
+			 return false;
         
-		
 		
     }
 	
-
-	/**
-     * @inheritdoc
-     */
-    public static function findIdentity($id)
-    {
-        return static::findOne($id);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        return static::findOne(['accessToken' => $token]);
-    }
-
-    /**
-     * Finds user by username
+	 /**
+     * Finds user by [[username]]
      *
-     * @param string $username
-     * @return static|null
+     * @return User|null
      */
-    public static function findByUsername($username)
+    public function getUser()
     {
-        return static::findOne(['username' => $username]);
+        if ($this->_user === false) {
+            $this->_user = User::findByUsername($this->username);
+        }
+
+        return $this->_user;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-   
+	
 
     /**
      * @return \yii\db\ActiveQuery
