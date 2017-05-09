@@ -18,8 +18,7 @@ class HistorySearch extends History
     public function rules()
     {
         return [
-            [['id', 'id_user', 'id_owner', 'id_book', 'active'], 'integer'],
-            [['date', 'book_name', 'image', 'author'], 'safe'],
+            [['year', 'book_name', 'author'], 'safe'],
         ];
     }
 
@@ -59,17 +58,14 @@ class HistorySearch extends History
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'id_user' => $this->id_user,
-            'id_owner' => $this->id_owner,
-            'id_book' => $this->id_book,
-            'active' => $this->active,
-            'date' => $this->date,
+            'book_name' => $this->book_name,
+            'author' => $this->author,
+            'year' => $this->year,
         ]);
 
         $query->andFilterWhere(['like', 'book_name', $this->book_name])
-            ->andFilterWhere(['like', 'image', $this->image])
-            ->andFilterWhere(['like', 'author', $this->author]);
+            ->andFilterWhere(['like', 'author', $this->author])
+            ->andFilterWhere(['like', 'year', $this->author]);
 
         return $dataProvider;
     }

@@ -4,7 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\models\Books;
-use yii\web\UploadedFile;
+
 
 
 /**
@@ -31,13 +31,25 @@ class History extends \yii\db\ActiveRecord
 	public $access = 0;
 	public $imageFile = '';
 
-	
+	const SCENARIO_UPDATE = 'update';
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return 'history';
+    }
+	
+
+   
+
+    public function scenarios()
+    {
+		$scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_UPDATE] =  ['year','book_name', 'author'];
+    
+        return $scenarios;
+		
     }
 
     /**
@@ -76,7 +88,79 @@ class History extends \yii\db\ActiveRecord
 		    return  true ;
 		
     }
+	
+    public function insertBook($old_rec)
+    {
+       
+			$user_id = 1;///////id авториз польз
+				
+			$this->id_book = $old_rec->id_book;
+			$this->id_owner = $user_id;
+			$this->active_ver = 1;
+			
+			$this->year = $old_rec->year;
+			$this->book_name = $old_rec->book_name;
+			$this->image =$old_rec->image;
+			$this->author = $old_rec->author;
+			$this->imageFile = $old_rec->imageFile;
+			
+			if(empty($old_rec->imageFile))
+			       $this->image = $old_rec->image;
+			else   
+			       $this->image = $user_id. '_' .uniqid(). '.' . $old_rec->imageFile->extension;
+		
+		    return  true ;
+		
+    }
 
 	
+	 public function attributeLabels()
+    {
+        return [
+            'book_name' => 'Название книги',
+            'author' => 'Автор книги',
+        	'year' => 'Год издания',
+            'image' => 'Обложка книги', 
+			'date' => 'Дата создания записи',
+        ];
+    }
+	  /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBooks()
+    {
+        return $this->hasMany(Books::className(), ['id' => 'id_book']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdBook()
+    {
+        return $this->hasOne(Books::className(), ['id' => 'id_book']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdOwner()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'id_owner']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getIdUser()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'id_user']);
+    }
+ /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUsers()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'id_owner']);
+    }
  
 }

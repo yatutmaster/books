@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 
+
 /**
  * This is the model class for table "books".
  *
@@ -38,7 +39,6 @@ class Books extends \yii\db\ActiveRecord
         ];
     }
 
-	
 
     /**
      * @return \yii\db\ActiveQuery
@@ -59,7 +59,7 @@ class Books extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getHistories()
+    public function getHistory()
     {
         return $this->hasMany(History::className(), ['id_book' => 'id']);
     }

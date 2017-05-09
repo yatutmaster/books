@@ -17,6 +17,8 @@ class m170507_114128_create_users_table extends Migration
             'username' => $this->string(20)->notNull()->unique(),
             'password' => $this->string(),
             'fio' => $this->string(),
+            'accessToken' => $this->string(),
+            'authKey' => $this->string(),
         ]);
     }
 
